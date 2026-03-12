@@ -89,3 +89,6 @@ def fetch_kalshi_data():
 def fetch_x_sentiment(asset: str) -> List[Dict]:
     # Placeholder for X sentiment (can be replaced with real API later)
     return [{"content": f"Positive on {asset}"} for _ in range(5)]
+def fetch_x_sentiment(asset: str) -> List[Dict]:
+    """Placeholder for X sentiment analysis."""
+    return [{"content": f"Positive on {asset}"} for _ in range(5)]

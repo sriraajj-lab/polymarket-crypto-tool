@@ -6,7 +6,7 @@ from .config import config
 from .utils import retry, normalize_asset_id
 import os
 import joblib
-
+from functools import lru_cache
 logger = logging.getLogger(__name__)
 
 @retry()

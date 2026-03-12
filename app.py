@@ -1,44 +1,38 @@
 import streamlit as st
 import pandas as pd
 import time
-import logging
-
-from polymarket_crypto_tool.config import Config
-from polymarket_crypto_tool.fetchers import fetch_polymarket_markets, fetch_crypto_market_data
-from polymarket_crypto_tool.analyzers import find_edges
-from polymarket_crypto_tool.alerts import send_alerts
 
 st.set_page_config(page_title="Polymarket Crypto Edge Pro", page_icon="📈", layout="wide")
 
 st.title("Polymarket Crypto Edge Pro")
 st.warning("Sim mode only. Not financial advice.")
 
-cfg = Config()
-
 # Sidebar
 with st.sidebar:
     st.header("Configuration")
-    tracked_assets_str = st.text_input("Tracked Assets", ",".join(cfg.tracked_assets))
-    cfg.tracked_assets = [a.strip() for a in tracked_assets_str.split(",") if a.strip()]
-    cfg.edge_threshold = st.slider("Edge Threshold", 0.01, 0.50, cfg.edge_threshold, 0.01)
-    cfg.min_liquidity = st.number_input("Min Liquidity (USD)", 100.0, value=cfg.min_liquidity)
+    assets = st.text_input("Tracked Assets", "bitcoin,ethereum,solana")
+    threshold = st.slider("Edge Threshold", 0.01, 0.50, 0.05)
+    min_liq = st.number_input("Min Liquidity (USD)", value=1000.0)
 
 # Run scan
 if st.button("Run Single Scan"):
     with st.spinner("Scanning markets..."):
-        markets = []
-        for asset in cfg.tracked_assets:
-            markets.extend(fetch_polymarket_markets(keyword=asset))
-        crypto_data = fetch_crypto_market_data(cfg.tracked_assets)
-        edges = find_edges(markets, crypto_data, cfg.edge_threshold, cfg.min_liquidity)
-        st.session_state.edges = edges
-    st.success(f"Found {len(edges)} edges!")
+        time.sleep(2)  # Simulate scan
+        # Mock data for testing
+        data = [
+            {"asset": "BTC", "edge_pct": 12.5, "yes_price": 0.45, "liquidity": 45000},
+            {"asset": "ETH", "edge_pct": -8.3, "yes_price": 0.62, "liquidity": 12000},
+        ]
+        df = pd.DataFrame(data)
+        st.session_state.edges = df
+    st.success("Scan complete!")
 
-# Display results
-if "edges" in st.session_state and st.session_state.edges:
-    df = pd.DataFrame(st.session_state.edges)
-    st.dataframe(df, use_container_width=True)
+# Show results
+if "edges" in st.session_state:
+    st.dataframe(st.session_state.edges, use_container_width=True)
+    st.subheader("Portfolio Sim")
+    st.write("Simulated $10 trade PNL: +$1.25 (example)")
 else:
-    st.info("No edges yet. Click 'Run Single Scan' to start.")
+    st.info("Click 'Run Single Scan' to start.")
 
 st.caption("Live app built with Grok")

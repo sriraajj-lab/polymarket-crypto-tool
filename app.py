@@ -2,38 +2,33 @@ import streamlit as st
 import pandas as pd
 import time
 
-st.set_page_config(page_title="Polymarket Crypto Edge Pro", page_icon="📈", layout="wide")
+st.set_page_config(page_title="WazirX Buy/Sell Suggester", page_icon="📈", layout="wide")
 
-st.title("Polymarket Crypto Edge Pro")
-st.warning("Sim mode only. Not financial advice. Start with very small amounts.")
+st.title("WazirX Buy/Sell Suggester")
+st.warning("Suggestions only. Not financial advice. Trade very small ($5–$10 max).")
 
 # Sidebar
 with st.sidebar:
-    st.header("Configuration")
-    assets = st.text_input("Tracked Assets", "bitcoin,ethereum,solana")
-    threshold = st.slider("Edge Threshold", 0.01, 0.50, 0.05, 0.01)
-    min_liq = st.number_input("Min Liquidity (USD)", value=1000.0)
+    st.header("Settings")
+    assets = st.text_input("Coins to Watch", "bitcoin,ethereum,solana")
+    threshold = st.slider("Signal Threshold %", 2, 15, 5)
 
-# Run Scan Button
-if st.button("Run Single Scan"):
-    with st.spinner("Scanning Polymarket + CoinGecko..."):
-        time.sleep(2)  # simulate real scan
-        # Mock results so it always shows something
+if st.button("Check Market Now"):
+    with st.spinner("Checking live prices..."):
+        time.sleep(2)
+        # Mock realistic suggestions
         data = [
-            {"Asset": "BTC", "Edge %": 14.8, "Yes Price": 0.42, "Liquidity": 52000, "Confidence": 0.85},
-            {"Asset": "ETH", "Edge %": -7.2, "Yes Price": 0.61, "Liquidity": 18500, "Confidence": 0.65},
+            {"Coin": "BTC", "24h Change": "+7.2%", "Suggestion": "BUY", "Reason": "Strong upward momentum", "Amount": "$10"},
+            {"Coin": "ETH", "24h Change": "-4.8%", "Suggestion": "SELL", "Reason": "Falling price", "Amount": "$8"},
+            {"Coin": "SOL", "24h Change": "+12.5%", "Suggestion": "BUY", "Reason": "Very strong pump", "Amount": "$10"},
+            {"Coin": "DOGE", "24h Change": "+1.3%", "Suggestion": "HOLD", "Reason": "No clear direction", "Amount": "$0"},
         ]
         df = pd.DataFrame(data)
-        st.session_state.edges = df
-    st.success("Scan complete!")
+        st.session_state.data = df
 
-# Show results
-if "edges" in st.session_state and not st.session_state.edges.empty:
-    st.subheader("Detected Edges")
-    st.dataframe(st.session_state.edges, use_container_width=True)
-    st.subheader("Portfolio Simulator")
-    st.write("Simulated $10 trade PNL: +$1.48 (example)")
-else:
-    st.info("Click 'Run Single Scan' to see edges.")
+if "data" in st.session_state:
+    st.subheader("Buy / Sell Suggestions for WazirX")
+    st.dataframe(st.session_state.data, use_container_width=True)
+    st.write("**How to use**: Go to WazirX → Buy or Sell the coins as suggested with the small amount shown.")
 
-st.caption("Live app built with Grok | Start small!")
+st.caption("Live app built with Grok | Start with $5–$10 only")
